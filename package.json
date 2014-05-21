@@ -1,0 +1,16 @@
+{
+  "name": "linter-scalac",
+  "linter-package": true,
+  "activationEvents": [],
+  "main": "./lib/init",
+  "version": "0.0.0",
+  "description": "Lint Scala on the fly, using scalac.",
+  "repository": "https://github.com/rockymadden/linter-scalac",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.90.0"
+  },
+  "dependencies": {
+    "shelljs": "^0.2.6"
+  }
+}
