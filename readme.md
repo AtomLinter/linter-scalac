@@ -1,29 +1,29 @@
 # linter-scalac
-Lint Scala on the fly, using scalac. Additionally, pass compiler flags (e.g. `-Ywarn-dead-code`) and your project's full classpath for more robust/accurate errors and warnings.
+Lint Scala on the fly, using scalac.
 
-## Install
-Install [Scala](http://www.scala-lang.org/):
+## Installation
+[Scala](http://www.scala-lang.org/):
 ```bash
 $ brew install scala
 ```
 ---
-Install [Atom](https://atom.io/):
+[Atom](https://atom.io/):
 ```bash
 $ brew cask install atom
 ```
 ---
-Install [linter](https://github.com/AtomLinter/Linter)
+[linter](https://github.com/AtomLinter/Linter)
 ```bash
 $ apm install linter
 ```
 ---
-Install [linter-scalac](https://github.com/rockymadden/linter-scalac)
+[linter-scalac](https://github.com/rockymadden/linter-scalac)
 ```bash
 $ apm install linter-scalac
 ```
 ---
 
-## Settings
+## Configuration
 Via `config.json`:
 ```coffeescript
 'linter-scalac':
