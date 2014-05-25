@@ -4,7 +4,7 @@
   "activationEvents": [],
   "main": "./lib/init",
   "version": "0.2.0",
-  "description": "Lint Scala on the fly, using scalac.",
+  "description": "Lint Scala on the fly, using scalac. Also possible to use other Scala linters, such as WartRemover, via compiler options.",
   "repository": "https://github.com/rockymadden/linter-scalac",
   "license": "MIT",
   "engines": {

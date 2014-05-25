@@ -1,5 +1,5 @@
 # linter-scalac
-Lint Scala on the fly, using scalac. It is also possible to use other Scala linters, such as [WartRemover](https://github.com/typelevel/wartremover), via compiler options (a configurable setting).
+Lint Scala on the fly, using scalac. Also possible to use other Scala linters, such as [WartRemover](https://github.com/typelevel/wartremover), via compiler options (a configurable setting).
 
 ## Installation
 [Scala](http://www.scala-lang.org/):
