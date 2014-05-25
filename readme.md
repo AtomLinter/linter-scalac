@@ -31,7 +31,7 @@ Via `config.json`:
   # Do not include the scalac file itself, just its parent directory.
   'scalacExecutablePath': '/usr/local/bin'
   # Execute `scalac -X` and `scalac -Y` for a handful of useful options.
-  'scalacFlags': '-Xlint -P:wartremover:traverser:org.brianmckenna.wartremover.warts.Unsafe'
+  'scalacOptions': '-Xlint -P:wartremover:traverser:org.brianmckenna.wartremover.warts.Unsafe'
 ```
 
 > <sub>__Note:__ It is also possible to configure linter-scalac via the GUI: `Atom` > `Preferences` > `linter-scalac`</sub>

@@ -22,8 +22,8 @@ class LinterScalac extends Linter
       # that it should look for `.classpath` in the root.
       dotClasspath = atom.project.path + '/.classpath'
 
-      if atom.config.get('linter-scalac.scalacFlags')?
-        @cmd = @cmd + ' ' + atom.config.get('linter-scalac.scalacFlags')
+      if atom.config.get('linter-scalac.scalacOptions')?
+        @cmd = @cmd + ' ' + atom.config.get('linter-scalac.scalacOptions')
 
       if fs.existsSync(dotClasspath)
         @classpath = fs.readFileSync(dotClasspath).toString().trim()
