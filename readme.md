@@ -1,5 +1,5 @@
 # linter-scalac
-Lint Scala on the fly, using scalac.
+Lint Scala on the fly, using scalac. It is also possible to use other Scala linters, such as [WartRemover](https://github.com/typelevel/wartremover), via compiler options (a configurable setting).
 
 ## Installation
 [Scala](http://www.scala-lang.org/):
@@ -27,10 +27,11 @@ $ apm install linter-scalac
 Via `config.json`:
 ```coffeescript
 'linter-scalac':
-  # Execute `which scala` to determine your own path. Do not include the scalac file itself, just its parent directory.
+  # Execute `which scala` to determine your own path.
+  # Do not include the scalac file itself, just its parent directory.
   'scalacExecutablePath': '/usr/local/bin'
-  # Execute `scalac -X` and `scalac -Y` for a handful of useful flags.
-  'scalacFlags': '-Xlint -Ywarn-adapted-args -Ywarn-dead-code -Ywarn-inaccessible -Ywarn-infer-any -Ywarn-nullary-override -Ywarn-nullary-unit -Ywarn-numeric-widen -Ywarn-unused -Ywarn-unused-import -Ywarn-value-discard'
+  # Execute `scalac -X` and `scalac -Y` for a handful of useful options.
+  'scalacFlags': '-Xlint -P:wartremover:traverser:org.brianmckenna.wartremover.warts.Unsafe'
 ```
 
 > <sub>__Note:__ It is also possible to configure linter-scalac via the GUI: `Atom` > `Preferences` > `linter-scalac`</sub>
