@@ -18,7 +18,8 @@ class LinterScalac extends Linter
     super(editor)
 
     atom.config.observe('linter-scalac.scalacExecutablePath', =>
-      # An assumption is made that Atom has a project open and that it should look for .classpath in the root.
+      # An assumption is made that Atom has a project open and
+      # that it should look for `.classpath` in the root.
       dotClasspath = atom.project.path + '/.classpath'
 
       if atom.config.get('linter-scalac.scalacFlags')?
