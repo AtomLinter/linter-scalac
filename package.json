@@ -9,8 +9,5 @@
   "license": "MIT",
   "engines": {
     "atom": ">0.90.0"
-  },
-  "dependencies": {
-    "shelljs": "^0.2.6"
   }
 }
