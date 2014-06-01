@@ -11,7 +11,7 @@ class LinterScalac extends Linter
 
 	linterName: 'scalac'
 
-	regex: 'scala:(?<line>\\d+): ((?<error>error)|(?<warning>warning)): (?<message>.+)\\n'
+	regex: 'scala:(?<line>\\d+): ((?<error>error)|(?<warning>warning)): (?<message>(.+)\\n(.+))\\n'
 
 	constructor: (editor) ->
 		super(editor)
@@ -30,12 +30,10 @@ class LinterScalac extends Linter
 			@executablePath = atom.config.get('linter-scalac.scalacExecutablePath')
 		)
 
-	destroy: ->
-		atom.config.unobserve('linter-scalac.scalacExecutablePath')
+	destroy: -> atom.config.unobserve('linter-scalac.scalacExecutablePath')
 
-	lintFile: (filePath, callback) ->
-		exec(@getCmd(filePath), cwd: @cwd, (error, stdout, stderr) =>
-			if stderr then @processMessage(stderr, callback)
-		)
+	lintFile: (filePath, callback) -> exec(@getCmd(filePath), cwd: @cwd, (error, stdout, stderr) =>
+		if stderr then @processMessage(stderr, callback)
+	)
 
 module.exports = LinterScalac
