@@ -1,7 +1,6 @@
 module.exports =
-  configDefaults:
-    scalacExecutablePath: null
-    scalacOptions: '-Xlint'
+	configDefaults:
+		scalacExecutablePath: null
+		scalacOptions: '-Xlint'
 
-  activate: ->
-    console.log('activate linter-scalac')
+	activate: -> console.log('activate linter-scalac')
