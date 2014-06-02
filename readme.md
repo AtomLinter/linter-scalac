@@ -17,7 +17,7 @@ $ brew cask install atom
 $ apm install linter
 ```
 ---
-[linter-scalac](https://github.com/rockymadden/linter-scalac):
+[linter-scalac](https://github.com/AtomLinter/linter-scalac):
 ```bash
 $ apm install linter-scalac
 ```
