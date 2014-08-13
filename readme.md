@@ -51,6 +51,9 @@ $ sbt 'export fullClasspath'
 >
 > <sub>3. It is assumed that the first path in `.classpath` is your compiled classes directory (the SBT command above does this automatically). Assuming this is true, it will play nice with SBT. Performing SBT tasks will update linter-scalac compiled files and vice-versa.</sub>
 
+## Donation
+[![Share the love!](https://chewbacco-stuff.s3.amazonaws.com/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KXUYS4ARNHCN8)
+
 ## License
 
 ```
