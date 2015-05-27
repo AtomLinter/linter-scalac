@@ -2,7 +2,7 @@
   "name": "linter-scalac",
   "linter-package": true,
   "main": "./lib/init",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Lint Scala on the fly, using scalac. Also possible to use other Scala linters, such as WartRemover, via compiler options.",
   "repository": "https://github.com/AtomLinter/linter-scalac",
   "license": "MIT",
