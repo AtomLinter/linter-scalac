@@ -23,7 +23,7 @@ class LinterScalac extends Linter
 		)
 
 		atom.config.observe('linter-scalac.scalacOptions', =>
-			dotClasspath = atom.project.path + '/.classpath'
+			dotClasspath = atom.project.getPaths()[0] + '/.classpath'
 
 			if atom.config.get('linter-scalac.scalacOptions')?
 				@options = atom.config.get('linter-scalac.scalacOptions')
