@@ -18,11 +18,11 @@ class LinterScalac extends Linter
 	constructor: (editor) ->
 		super(editor)
 
-		atom.config.observe('linter-scalac.scalacExecutablePath', =>
+		@pathSubscription = atom.config.observe('linter-scalac.scalacExecutablePath', =>
 			@executablePath = atom.config.get('linter-scalac.scalacExecutablePath')
 		)
 
-		atom.config.observe('linter-scalac.scalacOptions', =>
+		@optionsSubscription = atom.config.observe('linter-scalac.scalacOptions', =>
 			dotClasspath = atom.project.getPaths()[0] + '/.classpath'
 
 			if atom.config.get('linter-scalac.scalacOptions')?
@@ -35,12 +35,12 @@ class LinterScalac extends Linter
 		)
 
 	destroy: ->
-		atom.config.unobserve('linter-scalac.scalacExecutablePath')
-		atom.config.unobserve('linter-scalac.scalacOptions')
+		super
+		@pathSubscription.dispose()
+		@optionsSubscription.dispose()
 
 	lintFile: (filePath, callback) ->
 		command = @executablePath + '/' + @cmd + ' ' + filePath + ' ' + @options
-
 		exec(command, cwd: @cwd, (error, stdout, stderr) => if stderr then @processMessage(stderr, callback))
 
 module.exports = LinterScalac
