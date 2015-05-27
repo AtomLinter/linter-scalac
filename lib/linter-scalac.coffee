@@ -1,4 +1,5 @@
 {exec, child} = require('child_process')
+path = require('path')
 fs = require('fs')
 Linter = require(atom.packages.getLoadedPackage('linter').path + '/lib/linter')
 
@@ -40,7 +41,11 @@ class LinterScalac extends Linter
 		@optionsSubscription.dispose()
 
 	lintFile: (filePath, callback) ->
-		command = @executablePath + '/' + @cmd + ' ' + filePath + ' ' + @options
+		if @executablePath
+			command = @executablePath + '/' + @cmd
+		else
+			command = @cmd
+		command += ' ' + filePath + ' ' + @options
 		exec(command, cwd: @cwd, (error, stdout, stderr) => if stderr then @processMessage(stderr, callback))
 
 module.exports = LinterScalac
