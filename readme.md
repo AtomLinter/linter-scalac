@@ -12,7 +12,7 @@ $ brew install scala
 $ brew cask install atom
 ```
 ---
-[linter](https://github.com/AtomLinter/Linter):
+[linter](https://github.com/atom-community/linter):
 ```bash
 $ apm install linter
 ```
