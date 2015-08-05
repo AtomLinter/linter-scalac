@@ -17,6 +17,7 @@ module.exports =
     @subscriptions.add atom.config.observe 'linter-scalac.scalacOptions',
       (scalacOptions) =>
         @scalacOptions = scalacOptions
+    @cmd = 'scalac'
 
   deactivate: ->
     @subscriptions.dispose()
@@ -32,7 +33,10 @@ module.exports =
       lint: (textEditor) =>
         filePath = textEditor.getPath()
         args = @scalacOptions.split(' ')
-        command = atom.config.get 'linter-scalac.scalacExecutablePath'
+        if @scalacExecutablePath
+          command = @scalacExecutablePath + '/' + @cmd
+        else
+          command = @cmd
         if helpers.findFile(filePath, '.classpath')
           dotClasspath = helpers.findFile(filePath, '.classpath')
           classpath = fs.readFileSync(dotClasspath).toString().trim()
