@@ -4,7 +4,7 @@ module.exports =
   config:
     scalacExecutablePath:
       type: 'string'
-      default: ''
+      default: 'scalac'
     scalacOptions:
       type: 'string'
       default: '-Xlint'
@@ -17,7 +17,6 @@ module.exports =
     @subscriptions.add atom.config.observe 'linter-scalac.scalacOptions',
       (scalacOptions) =>
         @scalacOptions = scalacOptions
-    @cmd = 'scalac'
 
   deactivate: ->
     @subscriptions.dispose()
@@ -25,18 +24,15 @@ module.exports =
   provideLinter: ->
     helpers = require 'atom-linter'
     fs = require 'fs'
-
+    regex = 'scala:(?<line>\\d+): (?<type>(error|warning)): (?<message>(.+))'
     provider =
       grammarScopes: ['source.scala']
       scope: 'file'
-      lintOnFly: true
+      lintOnFly: false
       lint: (textEditor) =>
         filePath = textEditor.getPath()
-        if @scalacExecutablePath
-          command = @scalacExecutablePath + '/' + @cmd
-        else
-          command = @cmd
         args = @scalacOptions.split(' ')
+        command = atom.config.get 'linter-scalac.scalacExecutablePath'
         if helpers.findFile(filePath, '.classpath')
           dotClasspath = helpers.findFile(filePath, '.classpath')
           classpath = fs.readFileSync(dotClasspath).toString().trim()
@@ -44,5 +40,4 @@ module.exports =
           args.push(classpath)
         args.push(filePath)
         return helpers.exec(command, args, {stream: 'stderr'}).then (output) ->
-          regex = 'scala:(?<line>\\d+): (?<type>(error|warning)): (?<message>(.+))'
           return helpers.parse(output, regex, {filePath: filePath})
