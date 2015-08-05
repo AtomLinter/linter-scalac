@@ -1,51 +1,48 @@
-{exec, child} = require('child_process')
-path = require('path')
-fs = require('fs')
-Linter = require(atom.packages.getLoadedPackage('linter').path + '/lib/linter')
+{BufferedProcess, CompositeDisposable} = require 'atom'
 
-class LinterScalac extends Linter
-	@syntax: ['source.scala']
+module.exports =
+  config:
+    scalacExecutablePath:
+      type: 'string'
+      default: ''
+    scalacOptions:
+      type: 'string'
+      default: '-Xlint'
 
-	cmd: 'scalac'
+  activate: ->
+    @subscriptions = new CompositeDisposable
+    @subscriptions.add atom.config.observe 'linter-scalac.scalacExecutablePath',
+      (scalacExecutablePath) =>
+        @scalacExecutablePath = scalacExecutablePath
+    @subscriptions.add atom.config.observe 'linter-scalac.scalacOptions',
+      (scalacOptions) =>
+        @scalacOptions = scalacOptions
+    @cmd = 'scalac'
 
-	executablePath: ''
+  deactivate: ->
+    @subscriptions.dispose()
 
-	linterName: 'scalac'
+  provideLinter: ->
+    helpers = require 'atom-linter'
+    fs = require 'fs'
 
-	options: ''
-
-	regex: 'scala:(?<line>\\d+): ((?<error>error)|(?<warning>warning)): (?<message>(.+)\\n(.+))\\n'
-
-	constructor: (editor) ->
-		super(editor)
-
-		@pathSubscription = atom.config.observe('linter-scalac.scalacExecutablePath', =>
-			@executablePath = atom.config.get('linter-scalac.scalacExecutablePath')
-		)
-
-		@optionsSubscription = atom.config.observe('linter-scalac.scalacOptions', =>
-			dotClasspath = atom.project.getPaths()[0] + '/.classpath'
-
-			if atom.config.get('linter-scalac.scalacOptions')?
-				@options = atom.config.get('linter-scalac.scalacOptions')
-
-			if fs.existsSync(dotClasspath)
-				classpath = fs.readFileSync(dotClasspath).toString().trim()
-				@cwd = classpath.split(':')[0]
-				@options = @options + ' -classpath "' + classpath + '"'
-		)
-
-	destroy: ->
-		super
-		@pathSubscription.dispose()
-		@optionsSubscription.dispose()
-
-	lintFile: (filePath, callback) ->
-		if @executablePath
-			command = @executablePath + '/' + @cmd
-		else
-			command = @cmd
-		command += ' ' + filePath + ' ' + @options
-		exec(command, cwd: @cwd, (error, stdout, stderr) => if stderr then @processMessage(stderr, callback))
-
-module.exports = LinterScalac
+    provider =
+      grammarScopes: ['source.scala']
+      scope: 'file'
+      lintOnFly: true
+      lint: (textEditor) =>
+        filePath = textEditor.getPath()
+        if @scalacExecutablePath
+          command = @scalacExecutablePath + '/' + @cmd
+        else
+          command = @cmd
+        args = @scalacOptions.split(' ')
+        if helpers.findFile(filePath, '.classpath')
+          dotClasspath = helpers.findFile(filePath, '.classpath')
+          classpath = fs.readFileSync(dotClasspath).toString().trim()
+          args.push('-classpath')
+          args.push(classpath)
+        args.push(filePath)
+        return helpers.exec(command, args, {stream: 'stderr'}).then (output) ->
+          regex = 'scala:(?<line>\\d+): (?<type>(error|warning)): (?<message>(.+))'
+          return helpers.parse(output, regex, {filePath: filePath})
