@@ -28,8 +28,8 @@ Via `config.json`:
 ```coffeescript
 'linter-scalac':
   # Execute `which scala` to determine your own path.
-  # Do not include the scalac file itself, just its parent directory.
-  'scalacExecutablePath': '/usr/local/bin'
+  # By default the scalac binary is resolved from your path.
+  'scalacExecutablePath': 'scalac'
   # Execute `scalac -X` and `scalac -Y` for a handful of useful options.
   'scalacOptions': '-Xlint -P:wartremover:traverser:org.brianmckenna.wartremover.warts.Unsafe'
 ```
