@@ -10,6 +10,7 @@ module.exports =
       default: '-Xlint'
 
   activate: ->
+    require('atom-package-deps').install('linter-scalac')
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.config.observe 'linter-scalac.scalacExecutablePath',
       (scalacExecutablePath) =>

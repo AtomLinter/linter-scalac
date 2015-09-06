@@ -1,6 +1,8 @@
 # linter-scalac
 Lint Scala on the fly, using scalac. Also possible to use other Scala linters, such as [WartRemover](https://github.com/typelevel/wartremover), via compiler options (a configurable setting).
 
+This package will ensure all Atom dependencies are installed on activation.
+
 ## Installation
 [Scala](http://www.scala-lang.org/):
 ```bash
@@ -10,11 +12,6 @@ $ brew install scala
 [Atom](https://atom.io/):
 ```bash
 $ brew cask install atom
-```
----
-[linter](https://github.com/AtomLinter/Linter):
-```bash
-$ apm install linter
 ```
 ---
 [linter-scalac](https://github.com/AtomLinter/linter-scalac):
