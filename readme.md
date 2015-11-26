@@ -29,6 +29,10 @@ Via `config.json`:
   'scalacExecutablePath': 'scalac'
   # Execute `scalac -X` and `scalac -Y` for a handful of useful options.
   'scalacOptions': '-Xlint -P:wartremover:traverser:org.brianmckenna.wartremover.warts.Unsafe'
+  # Write the compiled classes to the location specified in .classpath
+  'compileClassesToClasspath': false
+  # Compile all Scala files in the project on lint.
+  'compileAllClassesOnLint': false
 ```
 
 > <sub>__Note:__ It is also possible to configure linter-scalac via the GUI: `Atom` > `Preferences` > `linter-scalac`</sub>
