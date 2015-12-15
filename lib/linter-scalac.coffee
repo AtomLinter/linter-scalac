@@ -20,7 +20,7 @@ module.exports =
       order: 4
 
   activate: ->
-    require('atom-package-deps').install('linter-scalac')
+    require('atom-package-deps').install()
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.config.observe 'linter-scalac.scalacExecutablePath',
       (scalacExecutablePath) =>
@@ -60,8 +60,8 @@ module.exports =
         throw "No project paths available" unless matchingProjectPaths.length == 1
         projectPath = matchingProjectPaths[0]
 
-        if helpers.findFile(projectPath, '.classpath')
-          dotClasspath = helpers.findFile(filePath, '.classpath')
+        if helpers.find(projectPath, '.classpath')
+          dotClasspath = helpers.find(filePath, '.classpath')
           classpath = fs.readFileSync(dotClasspath).toString().trim()
 
           args.push '-classpath'
