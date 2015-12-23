@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "promised-exec": "1.0.1",
-    "rimraf": "^2.4.5"
+    "rimraf": "^2.5.0"
   },
   "package-deps": [
     "linter"
