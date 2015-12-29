@@ -1,0 +1,25 @@
+version: "{build}"
+os: Windows Server 2012 R2
+branches:
+  only:
+    - master
+test: off
+deploy: off
+
+install:
+  - appveyor DownloadFile http://downloads.typesafe.com/scala/2.11.7/scala-2.11.7.zip -FileName scala-2.11.7.zip
+  - mkdir -p %LOCALAPPDATA%\scala
+  - 7z x scala-2.11.7.zip -o%LOCALAPPDATA%\scala
+  - SET PATH=%LOCALAPPDATA%\scala\scala-2.11.7\bin;%LOCALAPPDATA%\atom\bin;%PATH%
+  - appveyor DownloadFile https://atom.io/download/windows -FileName AtomSetup.exe
+  - AtomSetup.exe /silent
+
+build_script:
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - SET PATH=%LOCALAPPDATA%\java\bin;%LOCALAPPDATA%\scala\bin;%LOCALAPPDATA%\atom\bin;%PATH%
+  - atom --version
+  - apm -v
+  - scala -version
+  - apm clean
+  - apm install
+  - apm test
