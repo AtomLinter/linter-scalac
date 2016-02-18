@@ -4,8 +4,7 @@
 [![Travis CI Status](https://img.shields.io/travis/AtomLinter/linter-scalac/master.svg?style=flat-square&label=os%20x)](https://travis-ci.org/AtomLinter/linter-scalac)
 [![AppVeyor Status](https://img.shields.io/appveyor/ci/andystanton/linter-scalac-3ymif/master.svg?style=flat-square&label=windows)](https://ci.appveyor.com/project/andystanton/linter-scalac-3ymif)
 
-Lint Scala on the fly, using scalac. It is also possible to use other Scala linters,
-such as [WartRemover](https://github.com/typelevel/wartremover).
+Lint Scala using scalac.
 
 ## Installation
 
