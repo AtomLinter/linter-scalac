@@ -16,7 +16,7 @@ install:
 
 build_script:
   - cd %APPVEYOR_BUILD_FOLDER%
-  - SET PATH=%LOCALAPPDATA%\java\bin;%LOCALAPPDATA%\scala\bin;%LOCALAPPDATA%\atom\bin;%PATH%
+  - SET PATH=%LOCALAPPDATA%\java\bin;%LOCALAPPDATA%\scala\scala-2.11.7\bin;%LOCALAPPDATA%\atom\bin;%PATH%
   - atom --version
   - apm -v
   - scala -version
