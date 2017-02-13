@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "atom-package-deps": "^4.4.0",
-    "atom-linter": "^8.0.0",
+    "atom-linter": "^9.0.0",
     "glob": "^7.0.0",
     "mkdirp": "^0.5.1"
   },
