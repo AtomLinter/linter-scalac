@@ -11,7 +11,6 @@ git:
 sudo: false
 
 os:
-  - linux
   - osx
 
 jdk:
@@ -20,14 +19,7 @@ jdk:
 before_install:
   - if grep -qe '^darwin'<<<$OSTYPE; then brew update && brew install scala; fi
 
-install: true
-
 env:
   matrix:
     - ATOM_CHANNEL=stable
     - ATOM_CHANNEL=beta
-
-addons:
-  apt:
-    packages:
-      - scala
