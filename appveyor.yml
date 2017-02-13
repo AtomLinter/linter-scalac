@@ -7,10 +7,10 @@ test: off
 deploy: off
 
 install:
-  - appveyor DownloadFile http://downloads.typesafe.com/scala/2.11.7/scala-2.11.7.zip -FileName scala-2.11.7.zip
+  - appveyor DownloadFile http://downloads.typesafe.com/scala/2.12.1/scala-2.12.1.zip -FileName scala-2.12.1.zip
   - mkdir -p %LOCALAPPDATA%\scala
-  - 7z x scala-2.11.7.zip -o%LOCALAPPDATA%\scala
-  - SET PATH=%LOCALAPPDATA%\scala\scala-2.11.7\bin;%LOCALAPPDATA%\atom\bin;%PATH%
+  - 7z x scala-2.12.1.zip -o%LOCALAPPDATA%\scala
+  - SET PATH=%LOCALAPPDATA%\scala\scala-2.12.1\bin;%LOCALAPPDATA%\atom\bin;%PATH%
   - appveyor DownloadFile https://atom.io/download/windows -FileName AtomSetup.exe
   - AtomSetup.exe /silent
 
