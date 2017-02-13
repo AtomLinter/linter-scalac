@@ -15,7 +15,7 @@ os:
   - osx
 
 jdk:
-  - openjdk8
+  - oraclejdk8
 
 scala:
   - 2.12.1
