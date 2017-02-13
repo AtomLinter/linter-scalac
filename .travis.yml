@@ -23,6 +23,8 @@ jdk:
 before_install:
   - if grep -qe '^darwin'<<<$OSTYPE; then brew update && brew install scala; fi
 
+install: true
+
 env:
   matrix:
     - ATOM_CHANNEL=stable
