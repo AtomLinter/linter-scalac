@@ -55,14 +55,6 @@ describe('linter-scalac', () => {
     waitsForPromise(() =>
       Promise.resolve(path.join(__dirname, "..", "linter")).then(resetPath)));
 
-  const getProjectPath = name => {
-    return path.join(fixturesPath, name);
-  }
-
-  const getProjectPathURI = name => {
-    return `file://${getProjectPath(name)}`
-  }
-
   // Spec
 
   describe("the standard behaviour", () => {
@@ -71,17 +63,18 @@ describe('linter-scalac', () => {
       const projectPath = path.join(fixturesPath, "project1");
       const targetFile = path.join(fixturesPath, "project1", "EntryPoint.scala");
 
-      return waitsForPromise(() =>
-        openURI(projectPath)()
-          .then(openFile(targetFile))
-          .then(lint)
-          .then(messages => {
-            expect(messages.length).toEqual(1);
-            expect(messages[0].type).toEqual('error');
-            expect(messages[0].text)
-              .toEqual('value bar2 is not a member of Foo');
-          })
-        );
+      atom.project.setPaths([projectPath]);
+
+      return waitsForPromise(() => openURI(projectPath)()
+        .then(openFile(targetFile))
+        .then(lint)
+        .then(messages => {
+          expect(messages.length).toEqual(1);
+          expect(messages[0].type).toEqual('error');
+          expect(messages[0].text)
+            .toEqual('value bar2 is not a member of Foo');
+        })
+      );
     });
 
     it("lints a source file with dependencies if the dependencies are already compiled", () => {
@@ -95,16 +88,16 @@ describe('linter-scalac', () => {
 
       return waitsForPromise(() =>
         resetPath(targetPath)
-          .then(buildOutputPath(targetPath, projectPath))
-          .then(buildSourceWithDependency(dependency))
-          .then(openFile(targetFile))
-          .then(lint)
-          .then(messages => {
-            expect(messages.length).toEqual(1);
-            expect(messages[0].type).toEqual('error');
-            expect(messages[0].text)
-              .toEqual('value bar2 is not a member of Foo');
-          })
+        .then(buildOutputPath(targetPath, projectPath))
+        .then(buildSourceWithDependency(dependency))
+        .then(openFile(targetFile))
+        .then(lint)
+        .then(messages => {
+          expect(messages.length).toEqual(1);
+          expect(messages[0].type).toEqual('error');
+          expect(messages[0].text)
+            .toEqual('value bar2 is not a member of Foo');
+        })
       );
     });
 
