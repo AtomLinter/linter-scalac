@@ -23,6 +23,7 @@ describe('linter-scalac', () => {
   // Utility functions for use inside Promise chains:
 
   const openFile = targetFile => () => atom.workspace.open(targetFile);
+  const openURI = targetFile => () => atom.workspace.open(`file://${targetFile}`);
 
   const resetPath = targetPath =>
     Promise.resolve(rm.sync(targetPath)).catch(error => {});
@@ -64,8 +65,8 @@ describe('linter-scalac', () => {
 
       atom.project.setPaths([projectPath]);
 
-      return waitsForPromise(() => atom.workspace.open(projectPath)
-        .then(() => atom.workspace.open(targetFile))
+      return waitsForPromise(() => openURI(projectPath)()
+        .then(openFile(targetFile))
         .then(lint)
         .then(messages => {
           expect(messages.length).toEqual(1);
