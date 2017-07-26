@@ -1,25 +1,27 @@
-version: "{build}"
-os: Windows Server 2012 R2
-branches:
-  only:
-    - master
-test: off
-deploy: off
-
+### Project specific config ###
 install:
   - appveyor DownloadFile http://downloads.typesafe.com/scala/2.12.1/scala-2.12.1.zip -FileName scala-2.12.1.zip
   - mkdir -p %LOCALAPPDATA%\scala
   - 7z x scala-2.12.1.zip -o%LOCALAPPDATA%\scala
   - SET PATH=%LOCALAPPDATA%\scala\scala-2.12.1\bin;%LOCALAPPDATA%\atom\bin;%PATH%
-  - appveyor DownloadFile https://atom.io/download/windows -FileName AtomSetup.exe
-  - AtomSetup.exe /silent
+
+environment:
+  matrix:
+    - ATOM_CHANNEL: stable
+    - ATOM_CHANNEL: beta
 
 build_script:
-  - cd %APPVEYOR_BUILD_FOLDER%
-  - SET PATH=%LOCALAPPDATA%\java\bin;%LOCALAPPDATA%\scala\bin;%LOCALAPPDATA%\atom\bin;%PATH%
-  - atom --version
-  - apm -v
   - scala -version
-  - apm clean
-  - apm install
-  - apm test
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/atom/ci/master/build-package.ps1'))
+
+### Generic setup follows ###
+branches:
+  only:
+    - master
+
+version: "{build}"
+platform: x64
+clone_depth: 10
+skip_tags: true
+test: off
+deploy: off
