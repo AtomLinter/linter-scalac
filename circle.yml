@@ -1,16 +1,10 @@
 dependencies:
-  pre:
-    # Force updating wget due to the current containers being too out of date
-    - sudo apt-get update
-    - sudo apt-get install wget scala
   override:
-    - wget -O atom-amd64.deb https://atom.io/download/deb
-    # - sudo apt-get update # Cut out until wget is fixed on the containers
-    - sudo dpkg --install atom-amd64.deb || true
-    - sudo apt-get -f install
-    - apm install
+    - sudo apt-get update
+    - sudo apt-get install scala
+    - curl -s -O https://raw.githubusercontent.com/atom/ci/master/build-package.sh
+    - chmod u+x build-package.sh
+
 test:
   override:
-    - atom --version
-    - apm -v
-    - apm test
+    - ./build-package.sh
