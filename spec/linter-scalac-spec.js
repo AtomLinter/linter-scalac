@@ -32,17 +32,17 @@ describe('linter-scalac', () => {
 
   const getScalaVersion = () =>
     exec('scalac -version')
-    .catch(versionString =>
-      /.+(\d+\.\d+)\..+/.exec(versionString.buffer)[1]);
+      .catch(versionString =>
+        /.+(\d+\.\d+)\..+/.exec(versionString.buffer)[1]);
 
   const buildOutputPath = (targetPath, projectPath) => () =>
     getScalaVersion()
-    .then((scalaVersion) => {
-      const outputPath = path.join(targetPath, `scala-${scalaVersion}`, 'classes');
-      fs.writeFileSync(path.join(projectPath, '.classpath'), outputPath);
-      mkdirp(outputPath);
-      return outputPath;
-    });
+      .then((scalaVersion) => {
+        const outputPath = path.join(targetPath, `scala-${scalaVersion}`, 'classes');
+        fs.writeFileSync(path.join(projectPath, '.classpath'), outputPath);
+        mkdirp(outputPath);
+        return outputPath;
+      });
 
   const buildSourceWithDependency = dependency => outputPath =>
     exec(`scalac -d "${outputPath}" -classpath "${outputPath}" "${dependency}"`);
@@ -89,16 +89,16 @@ describe('linter-scalac', () => {
 
       return waitsForPromise(() =>
         resetPath(targetPath)
-        .then(buildOutputPath(targetPath, projectPath))
-        .then(buildSourceWithDependency(dependency))
-        .then(openFile(targetFile))
-        .then(lint)
-        .then((messages) => {
-          expect(messages.length).toEqual(1);
-          expect(messages[0].type).toEqual('error');
-          expect(messages[0].text)
-            .toEqual('value bar2 is not a member of Foo');
-        }),
+          .then(buildOutputPath(targetPath, projectPath))
+          .then(buildSourceWithDependency(dependency))
+          .then(openFile(targetFile))
+          .then(lint)
+          .then((messages) => {
+            expect(messages.length).toEqual(1);
+            expect(messages[0].type).toEqual('error');
+            expect(messages[0].text)
+              .toEqual('value bar2 is not a member of Foo');
+          }),
       );
     });
 
@@ -113,16 +113,16 @@ describe('linter-scalac', () => {
 
       return waitsForPromise(() =>
         resetPath(targetPath)
-        .then(buildOutputPath(targetPath, projectPath))
-        .then(buildSourceWithDependency(dependency))
-        .then(openFile(targetFile))
-        .then(lint)
-        .then((messages) => {
-          expect(messages.length).toEqual(1);
-          expect(messages[0].type).toEqual('error');
-          expect(messages[0].text)
-            .toEqual('value bar2 is not a member of linter.scalac.Foo');
-        }),
+          .then(buildOutputPath(targetPath, projectPath))
+          .then(buildSourceWithDependency(dependency))
+          .then(openFile(targetFile))
+          .then(lint)
+          .then((messages) => {
+            expect(messages.length).toEqual(1);
+            expect(messages[0].type).toEqual('error');
+            expect(messages[0].text)
+              .toEqual('value bar2 is not a member of linter.scalac.Foo');
+          }),
       );
     });
 
@@ -136,14 +136,14 @@ describe('linter-scalac', () => {
 
       return waitsForPromise(() =>
         resetPath(targetPath)
-        .then(buildOutputPath(targetPath, projectPath))
-        .then(openFile(targetFile))
-        .then(lint)
-        .then((messages) => {
-          expect(messages.length).toEqual(1);
-          expect(messages[0].type).toEqual('error');
-          expect(messages[0].text).toEqual('not found: type Foo');
-        }),
+          .then(buildOutputPath(targetPath, projectPath))
+          .then(openFile(targetFile))
+          .then(lint)
+          .then((messages) => {
+            expect(messages.length).toEqual(1);
+            expect(messages[0].type).toEqual('error');
+            expect(messages[0].text).toEqual('not found: type Foo');
+          }),
       );
     });
 
@@ -157,23 +157,23 @@ describe('linter-scalac', () => {
 
       return waitsForPromise(() =>
         resetPath(targetPath)
-        .then(buildOutputPath(targetPath, projectPath))
-        .then((_) => { outputPath = _; })
-        .then(openFile(targetFile))
-        .then(lint)
-        .then((messages) => {
-          expect(messages.length).toEqual(0);
-          expect(() =>
+          .then(buildOutputPath(targetPath, projectPath))
+          .then((_) => { outputPath = _; })
+          .then(openFile(targetFile))
+          .then(lint)
+          .then((messages) => {
+            expect(messages.length).toEqual(0);
+            expect(() =>
               fs.statSync(path.join(outputPath, 'linter', 'scalac', 'Foo.class')).isFile())
-            .toThrow(Error(
-              `ENOENT: no such file or directory, stat '${path.join(outputPath, 'linter', 'scalac', 'Foo.class')}'`));
-          expect(fs.statSync(
+              .toThrow(Error(
+                `ENOENT: no such file or directory, stat '${path.join(outputPath, 'linter', 'scalac', 'Foo.class')}'`));
+            expect(fs.statSync(
               path.join(__dirname, '..', 'linter', 'scalac', 'Foo.class')).isFile())
-            .toEqual(true);
-        })
-        .catch(() => {})
-        .then(() => path.join(__dirname, '..', 'linter'))
-        .then(resetPath));
+              .toEqual(true);
+          })
+          .catch(() => {})
+          .then(() => path.join(__dirname, '..', 'linter'))
+          .then(resetPath));
     });
   });
 
@@ -189,15 +189,15 @@ describe('linter-scalac', () => {
 
       return waitsForPromise(() =>
         resetPath(targetPath)
-        .then(buildOutputPath(targetPath, projectPath))
-        .then((_) => { outputPath = _; })
-        .then(openFile(targetFile))
-        .then(lint)
-        .then((messages) => {
-          expect(messages.length).toEqual(0);
-          expect(fs.statSync(path.join(outputPath, 'linter', 'scalac', 'Foo.class')).isFile())
-            .toEqual(true);
-        }),
+          .then(buildOutputPath(targetPath, projectPath))
+          .then((_) => { outputPath = _; })
+          .then(openFile(targetFile))
+          .then(lint)
+          .then((messages) => {
+            expect(messages.length).toEqual(0);
+            expect(fs.statSync(path.join(outputPath, 'linter', 'scalac', 'Foo.class')).isFile())
+              .toEqual(true);
+          }),
       );
     });
   });
@@ -214,14 +214,14 @@ describe('linter-scalac', () => {
 
       waitsForPromise(() =>
         resetPath(targetPath)
-        .then(buildOutputPath(targetPath, projectPath))
-        .then(openFile(targetFile))
-        .then(lint)
-        .then((messages) => {
-          expect(messages.length).toEqual(1);
-          expect(messages[0].type).toEqual('error');
-          expect(messages[0].text).toEqual('value bar2 is not a member of linter.scalac.Foo');
-        }),
+          .then(buildOutputPath(targetPath, projectPath))
+          .then(openFile(targetFile))
+          .then(lint)
+          .then((messages) => {
+            expect(messages.length).toEqual(1);
+            expect(messages[0].type).toEqual('error');
+            expect(messages[0].text).toEqual('value bar2 is not a member of linter.scalac.Foo');
+          }),
       );
     });
   });
