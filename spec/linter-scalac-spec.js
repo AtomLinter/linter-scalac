@@ -1,84 +1,115 @@
 'use babel';
 
-jasmine.getEnv().defaultTimeoutInterval = 60000;
+import fs from 'fs';
+import path from 'path';
+import mkdirp from 'mkdirp';
+import { exec } from 'atom-linter';
+import rm from 'rimraf';
+// eslint-disable-next-line no-unused-vars
+import { it, fit, wait, beforeEach, afterEach } from 'jasmine-fix';
+
+const { lint } = require('../lib/linter-scalac').provideLinter();
+
+// Scalac is _slow_, up the default timeout to 60 seconds.
+const JASMINE_TIMEOUT = 60 * 1000;
+
+const fixturesPath = path.join(__dirname, 'fixtures');
 
 // Requires scalac to be installed and on the path. Tests were written on OSX 10.10
-// and verified on Windows 7. If running on Windows, Atom can't be open at the same
-// time as it prevents some of the temp directories being created/torn down.
+// and verified on Windows 7.
+
+// Utility functions
+const openFile = async targetFile => atom.workspace.open(targetFile);
+
+const resetPath = async targetPath =>
+  new Promise((resolve, reject) => {
+    rm(targetPath, (err) => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+
+const mkdirs = async targetDir =>
+  new Promise((resolve, reject) => {
+    mkdirp(targetDir, (err) => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+
+const fileStats = async filePath =>
+  new Promise((resolve, reject) => {
+    fs.stat(filePath, (err, stats) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(stats);
+    });
+  });
+
+const isFile = async filePath => (await fileStats(filePath)).isFile();
+
+const getScalaVersion = async () => {
+  if (!getScalaVersion.version) {
+    const execOpts = {
+      stream: 'both',
+    };
+    const output = await exec('scalac', ['-version'], execOpts);
+    // stdout on Windows, stderr on *NIX, seriously scalac?
+    const versionString = `${output.stdout} ${output.stderr}`;
+    getScalaVersion.version = /.+(\d+\.\d+\.\d+).+/.exec(versionString)[1];
+  }
+  return getScalaVersion.version;
+};
+
+const buildOutputPath = async (targetPath, projectPath) => {
+  const scalaVersion = await getScalaVersion();
+  const outputPath = path.join(targetPath, `scala-${scalaVersion}`, 'classes');
+  fs.writeFileSync(path.join(projectPath, '.classpath'), outputPath);
+  await mkdirs(outputPath);
+  return outputPath;
+};
+
+const buildSourceWithDependency = async (dependency, outputPath) => {
+  const args = [
+    '-d', outputPath,
+    '-classpath', outputPath,
+    dependency,
+  ];
+  return exec('scalac', args);
+};
 
 describe('linter-scalac', () => {
-  const fs = require('fs');
-  const path = require('path');
-
-  const mkdirp = require('mkdirp');
-  /* eslint-disable import/no-extraneous-dependencies */
-  const exec = require('promised-exec');
-  const rm = require('rimraf');
-  /* eslint-enable import/no-extraneous-dependencies */
-
-  const lint = require('../lib/linter-scalac')
-    .provideLinter()
-    .lint;
-
-  const fixturesPath = path.join(__dirname, 'fixtures');
-
-  // Utility functions for use inside Promise chains:
-
-  const openFile = targetFile => () => atom.workspace.open(targetFile);
-  const openURI = targetFile => () => atom.workspace.open(`file://${targetFile}`);
-
-  const resetPath = targetPath =>
-    Promise.resolve(rm.sync(targetPath)).catch(() => {});
-
-  const getScalaVersion = () =>
-    exec('scalac -version')
-      .catch(versionString =>
-        /.+(\d+\.\d+)\..+/.exec(versionString.buffer)[1]);
-
-  const buildOutputPath = (targetPath, projectPath) => () =>
-    getScalaVersion()
-      .then((scalaVersion) => {
-        const outputPath = path.join(targetPath, `scala-${scalaVersion}`, 'classes');
-        fs.writeFileSync(path.join(projectPath, '.classpath'), outputPath);
-        mkdirp(outputPath);
-        return outputPath;
-      });
-
-  const buildSourceWithDependency = dependency => outputPath =>
-    exec(`scalac -d "${outputPath}" -classpath "${outputPath}" "${dependency}"`);
-
   // Setup / Teardown
+  beforeEach(async () => {
+    await atom.packages.activatePackage('linter-scalac');
+  });
 
-  beforeEach(() =>
-    waitsForPromise(() =>
-      atom.packages.activatePackage('linter-scalac')));
-
-  afterEach(() =>
-    waitsForPromise(() =>
-      Promise.resolve(path.join(__dirname, '..', 'linter')).then(resetPath)));
+  afterEach(async () => {
+    await resetPath(path.join(__dirname, '..', 'linter'));
+  });
 
   // Spec
-
   describe('the standard behaviour', () => {
-    it('lints a source file with no dependencies', () => {
+    it('lints a source file with no dependencies', async () => {
       const projectPath = path.join(fixturesPath, 'project1');
       const targetFile = path.join(fixturesPath, 'project1', 'EntryPoint.scala');
 
       atom.project.setPaths([projectPath]);
 
-      return waitsForPromise(() => openURI(projectPath)()
-        .then(openFile(targetFile))
-        .then(lint)
-        .then((messages) => {
-          expect(messages.length).toEqual(1);
-          expect(messages[0].type).toEqual('error');
-          expect(messages[0].text)
-            .toEqual('value bar2 is not a member of Foo');
-        }),
-      );
-    });
+      const editor = await openFile(targetFile);
+      const messages = await lint(editor);
 
-    it('lints a source file with dependencies if the dependencies are already compiled', () => {
+      expect(messages.length).toBe(1);
+      expect(messages[0].type).toBe('error');
+      expect(messages[0].text).toBe('value bar2 is not a member of Foo');
+    }, { timeout: JASMINE_TIMEOUT });
+
+    it('lints a source file with dependencies if the dependencies are already compiled', async () => {
       const projectPath = path.join(fixturesPath, 'project2');
       const srcPath = path.join(projectPath, 'src', 'main', 'scala');
       const targetPath = path.join(projectPath, 'target');
@@ -87,22 +118,18 @@ describe('linter-scalac', () => {
 
       atom.project.setPaths([projectPath]);
 
-      return waitsForPromise(() =>
-        resetPath(targetPath)
-          .then(buildOutputPath(targetPath, projectPath))
-          .then(buildSourceWithDependency(dependency))
-          .then(openFile(targetFile))
-          .then(lint)
-          .then((messages) => {
-            expect(messages.length).toEqual(1);
-            expect(messages[0].type).toEqual('error');
-            expect(messages[0].text)
-              .toEqual('value bar2 is not a member of Foo');
-          }),
-      );
-    });
+      await resetPath(targetPath);
+      const outputPath = await buildOutputPath(targetPath, projectPath);
+      await buildSourceWithDependency(dependency, outputPath);
+      const editor = await openFile(targetFile);
+      const messages = await lint(editor);
 
-    it('lints a source file with dependencies in packages if the dependencies are already compiled', () => {
+      expect(messages.length).toBe(1);
+      expect(messages[0].type).toBe('error');
+      expect(messages[0].text).toBe('value bar2 is not a member of Foo');
+    }, { timeout: JASMINE_TIMEOUT });
+
+    it('lints a source file with dependencies in packages if the dependencies are already compiled', async () => {
       const projectPath = path.join(fixturesPath, 'project3');
       const srcPath = path.join(projectPath, 'src', 'main', 'scala', 'linter', 'scalac');
       const targetPath = path.join(projectPath, 'target');
@@ -111,22 +138,18 @@ describe('linter-scalac', () => {
 
       atom.project.setPaths([projectPath]);
 
-      return waitsForPromise(() =>
-        resetPath(targetPath)
-          .then(buildOutputPath(targetPath, projectPath))
-          .then(buildSourceWithDependency(dependency))
-          .then(openFile(targetFile))
-          .then(lint)
-          .then((messages) => {
-            expect(messages.length).toEqual(1);
-            expect(messages[0].type).toEqual('error');
-            expect(messages[0].text)
-              .toEqual('value bar2 is not a member of linter.scalac.Foo');
-          }),
-      );
-    });
+      await resetPath(targetPath);
+      const outputPath = await buildOutputPath(targetPath, projectPath);
+      await buildSourceWithDependency(dependency, outputPath);
+      const editor = await openFile(targetFile);
+      const messages = await lint(editor);
 
-    it('does not usefully lint a source file with dependencies in packages if the dependencies are not compiled', () => {
+      expect(messages.length).toBe(1);
+      expect(messages[0].type).toBe('error');
+      expect(messages[0].text).toBe('value bar2 is not a member of linter.scalac.Foo');
+    }, { timeout: JASMINE_TIMEOUT });
+
+    it('does not usefully lint a source file with dependencies in packages if the dependencies are not compiled', async () => {
       const projectPath = path.join(fixturesPath, 'project3');
       const srcPath = path.join(projectPath, 'src', 'main', 'scala', 'linter', 'scalac');
       const targetPath = path.join(projectPath, 'target');
@@ -134,76 +157,65 @@ describe('linter-scalac', () => {
 
       atom.project.setPaths([projectPath]);
 
-      return waitsForPromise(() =>
-        resetPath(targetPath)
-          .then(buildOutputPath(targetPath, projectPath))
-          .then(openFile(targetFile))
-          .then(lint)
-          .then((messages) => {
-            expect(messages.length).toEqual(1);
-            expect(messages[0].type).toEqual('error');
-            expect(messages[0].text).toEqual('not found: type Foo');
-          }),
-      );
-    });
+      await resetPath(targetPath);
+      await buildOutputPath(targetPath, projectPath);
+      const editor = await openFile(targetFile);
+      const messages = await lint(editor);
 
-    it('does not compile files to the classpath', () => {
+      expect(messages.length).toBe(1);
+      expect(messages[0].type).toBe('error');
+      expect(messages[0].text).toBe('not found: type Foo');
+    }, { timeout: JASMINE_TIMEOUT });
+
+    it('does not compile files to the classpath', async () => {
       const projectPath = path.join(fixturesPath, 'project3');
       const targetPath = path.join(projectPath, 'target');
       const targetFile = path.join(projectPath, 'src', 'main', 'scala', 'linter', 'scalac', 'Foo.scala');
-      let outputPath = null;
 
       atom.project.setPaths([projectPath]);
 
-      return waitsForPromise(() =>
-        resetPath(targetPath)
-          .then(buildOutputPath(targetPath, projectPath))
-          .then((_) => { outputPath = _; })
-          .then(openFile(targetFile))
-          .then(lint)
-          .then((messages) => {
-            expect(messages.length).toEqual(0);
-            expect(() =>
-              fs.statSync(path.join(outputPath, 'linter', 'scalac', 'Foo.class')).isFile())
-              .toThrow(Error(
-                `ENOENT: no such file or directory, stat '${path.join(outputPath, 'linter', 'scalac', 'Foo.class')}'`));
-            expect(fs.statSync(
-              path.join(__dirname, '..', 'linter', 'scalac', 'Foo.class')).isFile())
-              .toEqual(true);
-          })
-          .catch(() => {})
-          .then(() => path.join(__dirname, '..', 'linter'))
-          .then(resetPath));
-    });
+      await resetPath(targetPath);
+      const outputPath = await buildOutputPath(targetPath, projectPath);
+      const editor = await openFile(targetFile);
+      const messages = await lint(editor);
+
+      expect(messages.length).toEqual(0);
+
+      const classPath = path.join(outputPath, 'linter', 'scalac', 'Foo.class');
+      try {
+        await isFile(classPath);
+        expect(false).toBe(true);
+      } catch (e) {
+        const errMessage = `ENOENT: no such file or directory, stat '${classPath}'`;
+        expect(e.message).toEqual(errMessage);
+      }
+      const goodpath = path.join(__dirname, '..', 'linter', 'scalac', 'Foo.class');
+      expect(await isFile(goodpath)).toEqual(true);
+    }, { timeout: JASMINE_TIMEOUT });
   });
 
   describe('the behaviour that writes to the classpath folder', () => {
-    it('compiles files to the classpath', () => {
+    it('compiles files to the classpath', async () => {
       const projectPath = path.join(fixturesPath, 'project3');
       const targetPath = path.join(projectPath, 'target');
       const targetFile = path.join(projectPath, 'src', 'main', 'scala', 'linter', 'scalac', 'Foo.scala');
-      let outputPath = null;
 
       atom.config.set('linter-scalac.compileClassesToClasspath', true);
       atom.project.setPaths([projectPath]);
 
-      return waitsForPromise(() =>
-        resetPath(targetPath)
-          .then(buildOutputPath(targetPath, projectPath))
-          .then((_) => { outputPath = _; })
-          .then(openFile(targetFile))
-          .then(lint)
-          .then((messages) => {
-            expect(messages.length).toEqual(0);
-            expect(fs.statSync(path.join(outputPath, 'linter', 'scalac', 'Foo.class')).isFile())
-              .toEqual(true);
-          }),
-      );
-    });
+      await resetPath(targetPath);
+      const outputPath = await buildOutputPath(targetPath, projectPath);
+      const editor = await openFile(targetFile);
+      const messages = await lint(editor);
+
+      expect(messages.length).toEqual(0);
+      const classPath = path.join(outputPath, 'linter', 'scalac', 'Foo.class');
+      expect(await isFile(classPath)).toEqual(true);
+    }, { timeout: JASMINE_TIMEOUT });
   });
 
   describe('the behaviour that compiles all classes on lint', () => {
-    it('lints the active file by compiling all the scala files in the project', () => {
+    it('lints the active file by compiling all the scala files in the project', async () => {
       const projectPath = path.join(fixturesPath, 'project3');
       const targetPath = path.join(projectPath, 'target');
       const targetFile = path.join(projectPath, 'src', 'main', 'scala', 'linter', 'scalac', 'EntryPoint.scala');
@@ -212,17 +224,14 @@ describe('linter-scalac', () => {
       atom.config.set('linter-scalac.compileAllClassesOnLint', true);
       atom.project.setPaths([projectPath]);
 
-      waitsForPromise(() =>
-        resetPath(targetPath)
-          .then(buildOutputPath(targetPath, projectPath))
-          .then(openFile(targetFile))
-          .then(lint)
-          .then((messages) => {
-            expect(messages.length).toEqual(1);
-            expect(messages[0].type).toEqual('error');
-            expect(messages[0].text).toEqual('value bar2 is not a member of linter.scalac.Foo');
-          }),
-      );
-    });
+      await resetPath(targetPath);
+      await buildOutputPath(targetPath, projectPath);
+      const editor = await openFile(targetFile);
+      const messages = await lint(editor);
+
+      expect(messages.length).toEqual(1);
+      expect(messages[0].type).toEqual('error');
+      expect(messages[0].text).toEqual('value bar2 is not a member of linter.scalac.Foo');
+    }, { timeout: JASMINE_TIMEOUT });
   });
 });
