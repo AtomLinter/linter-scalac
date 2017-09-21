@@ -61,7 +61,7 @@ const getScalaVersion = async () => {
     const output = await exec('scalac', ['-version'], execOpts);
     // stdout on Windows, stderr on *NIX, seriously scalac?
     const versionString = `${output.stdout} ${output.stderr}`;
-    getScalaVersion.version = /.+(\d+\.\d+\.\d+).+/.exec(versionString)[1];
+    [, getScalaVersion.version] = /.+(\d+\.\d+\.\d+).+/.exec(versionString);
   }
   return getScalaVersion.version;
 };
