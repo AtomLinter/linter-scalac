@@ -11,7 +11,7 @@ import { it, fit, wait, beforeEach, afterEach } from 'jasmine-fix';
 const { lint } = require('../lib/linter-scalac').provideLinter();
 
 // Scalac is _slow_, up the default timeout to 60 seconds.
-jasmine.getEnv().defaultTimeoutInterval = 60 * 1000;
+const JASMINE_TIMEOUT = 60 * 1000;
 
 const fixturesPath = path.join(__dirname, 'fixtures');
 
@@ -107,7 +107,7 @@ describe('linter-scalac', () => {
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('error');
       expect(messages[0].text).toBe('value bar2 is not a member of Foo');
-    });
+    }, { timeout: JASMINE_TIMEOUT });
 
     it('lints a source file with dependencies if the dependencies are already compiled', async () => {
       const projectPath = path.join(fixturesPath, 'project2');
@@ -127,7 +127,7 @@ describe('linter-scalac', () => {
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('error');
       expect(messages[0].text).toBe('value bar2 is not a member of Foo');
-    });
+    }, { timeout: JASMINE_TIMEOUT });
 
     it('lints a source file with dependencies in packages if the dependencies are already compiled', async () => {
       const projectPath = path.join(fixturesPath, 'project3');
@@ -147,7 +147,7 @@ describe('linter-scalac', () => {
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('error');
       expect(messages[0].text).toBe('value bar2 is not a member of linter.scalac.Foo');
-    });
+    }, { timeout: JASMINE_TIMEOUT });
 
     it('does not usefully lint a source file with dependencies in packages if the dependencies are not compiled', async () => {
       const projectPath = path.join(fixturesPath, 'project3');
@@ -165,7 +165,7 @@ describe('linter-scalac', () => {
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('error');
       expect(messages[0].text).toBe('not found: type Foo');
-    });
+    }, { timeout: JASMINE_TIMEOUT });
 
     it('does not compile files to the classpath', async () => {
       const projectPath = path.join(fixturesPath, 'project3');
@@ -191,7 +191,7 @@ describe('linter-scalac', () => {
       }
       const goodpath = path.join(__dirname, '..', 'linter', 'scalac', 'Foo.class');
       expect(await isFile(goodpath)).toEqual(true);
-    });
+    }, { timeout: JASMINE_TIMEOUT });
   });
 
   describe('the behaviour that writes to the classpath folder', () => {
@@ -211,7 +211,7 @@ describe('linter-scalac', () => {
       expect(messages.length).toEqual(0);
       const classPath = path.join(outputPath, 'linter', 'scalac', 'Foo.class');
       expect(await isFile(classPath)).toEqual(true);
-    });
+    }, { timeout: JASMINE_TIMEOUT });
   });
 
   describe('the behaviour that compiles all classes on lint', () => {
@@ -232,6 +232,6 @@ describe('linter-scalac', () => {
       expect(messages.length).toEqual(1);
       expect(messages[0].type).toEqual('error');
       expect(messages[0].text).toEqual('value bar2 is not a member of linter.scalac.Foo');
-    });
+    }, { timeout: JASMINE_TIMEOUT });
   });
 });
