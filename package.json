@@ -6,7 +6,11 @@
   "repository": "https://github.com/AtomLinter/linter-scalac",
   "license": "MIT",
   "engines": {
-    "atom": ">0.90.0"
+    "atom": ">=1.7.0 <2.0.0"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "apm test"
   },
   "dependencies": {
     "atom-package-deps": "^4.4.0",
