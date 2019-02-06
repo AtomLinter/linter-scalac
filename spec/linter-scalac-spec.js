@@ -5,8 +5,10 @@ import path from 'path';
 import mkdirp from 'mkdirp';
 import { exec } from 'atom-linter';
 import rm from 'rimraf';
-// eslint-disable-next-line no-unused-vars
-import { it, fit, wait, beforeEach, afterEach } from 'jasmine-fix';
+import {
+  // eslint-disable-next-line no-unused-vars
+  it, fit, wait, beforeEach, afterEach,
+} from 'jasmine-fix';
 
 const { lint } = require('../lib/linter-scalac').provideLinter();
 
@@ -21,35 +23,32 @@ const fixturesPath = path.join(__dirname, 'fixtures');
 // Utility functions
 const openFile = async targetFile => atom.workspace.open(targetFile);
 
-const resetPath = async targetPath =>
-  new Promise((resolve, reject) => {
-    rm(targetPath, (err) => {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
+const resetPath = async targetPath => new Promise((resolve, reject) => {
+  rm(targetPath, (err) => {
+    if (err) {
+      reject(err);
+    }
+    resolve();
   });
+});
 
-const mkdirs = async targetDir =>
-  new Promise((resolve, reject) => {
-    mkdirp(targetDir, (err) => {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
+const mkdirs = async targetDir => new Promise((resolve, reject) => {
+  mkdirp(targetDir, (err) => {
+    if (err) {
+      reject(err);
+    }
+    resolve();
   });
+});
 
-const fileStats = async filePath =>
-  new Promise((resolve, reject) => {
-    fs.stat(filePath, (err, stats) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(stats);
-    });
+const fileStats = async filePath => new Promise((resolve, reject) => {
+  fs.stat(filePath, (err, stats) => {
+    if (err) {
+      reject(err);
+    }
+    resolve(stats);
   });
+});
 
 const isFile = async filePath => (await fileStats(filePath)).isFile();
 
