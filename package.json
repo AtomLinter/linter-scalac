@@ -54,5 +54,10 @@
     "env": {
       "node": true
     }
+  },
+  "renovate": {
+    "extends": [
+      "config:base"
+    ]
   }
 }
