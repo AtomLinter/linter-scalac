@@ -10,7 +10,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "apm test"
+    "test": "atom --test spec"
   },
   "dependencies": {
     "atom-linter": "10.0.0",
@@ -26,12 +26,12 @@
     "rimraf": "2.6.3"
   },
   "package-deps": [
-    "linter"
+    "linter:2.0.0"
   ],
   "providedServices": {
     "linter": {
       "versions": {
-        "1.0.0": "provideLinter"
+        "2.0.0": "provideLinter"
       }
     }
   },
