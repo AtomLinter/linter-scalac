@@ -32,7 +32,7 @@ Via `config.json`:
   # Compile all Scala files in the project on lint.
   'compileAllClassesOnLint': false
 
-  # Determines if lints on every change or lint on save only..
+  # Determines if lints on every change or lint on save only.
   'lintsOnChange': false
 ```
 
