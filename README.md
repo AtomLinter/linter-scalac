@@ -40,11 +40,11 @@ It is also possible to configure these settings via the GUI:
 
 `Atom` > `Preferences` > `linter-scalac`
 
-## Lint on fly
+## Lint on change
 
 It is disabled by default because the scala compiler is slow but you can change
 it via configuration option. Keep in mind that this option does not override
-the global linter 'Lint on fly' configuration option.
+the global linter 'Lint on change' configuration option.
 
 ## Classpath
 
