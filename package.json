@@ -30,7 +30,7 @@
       "type": "boolean"
     },
     "lintsOnChange": {
-      "default": true,
+      "default": false,
       "description": "Determines if lints on every change or lint on save only.",
       "type": "boolean"
     }
