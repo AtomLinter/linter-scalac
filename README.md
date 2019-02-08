@@ -31,11 +31,20 @@ Via `config.json`:
 
   # Compile all Scala files in the project on lint.
   'compileAllClassesOnLint': false
+
+  # Determines if lints on every change or lint on save only..
+  'lintsOnChange': false
 ```
 
 It is also possible to configure these settings via the GUI:
 
 `Atom` > `Preferences` > `linter-scalac`
+
+## Lint on fly
+
+It is disabled by default because the scala compiler is slow but you can change
+it via configuration option. Keep in mind that this option does not override
+the global linter 'Lint on fly' configuration option.
 
 ## Classpath
 
