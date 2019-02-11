@@ -104,8 +104,8 @@ describe('linter-scalac', () => {
       const messages = await lint(editor);
 
       expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('error');
-      expect(messages[0].text).toBe('value bar2 is not a member of Foo');
+      expect(messages[0].severity).toBe('error');
+      expect(messages[0].excerpt).toBe('value bar2 is not a member of Foo');
     });
 
     it('lints a source file with dependencies if the dependencies are already compiled', async () => {
@@ -124,8 +124,8 @@ describe('linter-scalac', () => {
       const messages = await lint(editor);
 
       expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('error');
-      expect(messages[0].text).toBe('value bar2 is not a member of Foo');
+      expect(messages[0].severity).toBe('error');
+      expect(messages[0].excerpt).toBe('value bar2 is not a member of Foo');
     });
 
     it('lints a source file with dependencies in packages if the dependencies are already compiled', async () => {
@@ -144,8 +144,8 @@ describe('linter-scalac', () => {
       const messages = await lint(editor);
 
       expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('error');
-      expect(messages[0].text).toBe('value bar2 is not a member of linter.scalac.Foo');
+      expect(messages[0].severity).toBe('error');
+      expect(messages[0].excerpt).toBe('value bar2 is not a member of linter.scalac.Foo');
     });
 
     it('does not usefully lint a source file with dependencies in packages if the dependencies are not compiled', async () => {
@@ -162,8 +162,8 @@ describe('linter-scalac', () => {
       const messages = await lint(editor);
 
       expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('error');
-      expect(messages[0].text).toBe('not found: type Foo');
+      expect(messages[0].severity).toBe('error');
+      expect(messages[0].excerpt).toBe('not found: type Foo');
     });
 
     it('does not compile files to the classpath', async () => {
@@ -178,7 +178,7 @@ describe('linter-scalac', () => {
       const editor = await openFile(targetFile);
       const messages = await lint(editor);
 
-      expect(messages.length).toEqual(0);
+      expect(messages.length).toBe(0);
 
       const classPath = path.join(outputPath, 'linter', 'scalac', 'Foo.class');
       try {
@@ -186,7 +186,7 @@ describe('linter-scalac', () => {
         expect(false).toBe(true);
       } catch (e) {
         const errMessage = `ENOENT: no such file or directory, stat '${classPath}'`;
-        expect(e.message).toEqual(errMessage);
+        expect(e.message).toBe(errMessage);
       }
       const goodpath = path.join(__dirname, '..', 'linter', 'scalac', 'Foo.class');
       expect(await isFile(goodpath)).toEqual(true);
@@ -207,7 +207,7 @@ describe('linter-scalac', () => {
       const editor = await openFile(targetFile);
       const messages = await lint(editor);
 
-      expect(messages.length).toEqual(0);
+      expect(messages.length).toBe(0);
       const classPath = path.join(outputPath, 'linter', 'scalac', 'Foo.class');
       expect(await isFile(classPath)).toEqual(true);
     });
@@ -228,9 +228,9 @@ describe('linter-scalac', () => {
       const editor = await openFile(targetFile);
       const messages = await lint(editor);
 
-      expect(messages.length).toEqual(1);
-      expect(messages[0].type).toEqual('error');
-      expect(messages[0].text).toEqual('value bar2 is not a member of linter.scalac.Foo');
+      expect(messages.length).toBe(1);
+      expect(messages[0].severity).toBe('error');
+      expect(messages[0].excerpt).toBe('value bar2 is not a member of linter.scalac.Foo');
     });
   });
 });

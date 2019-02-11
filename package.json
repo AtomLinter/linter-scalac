@@ -8,9 +8,36 @@
   "engines": {
     "atom": ">=1.7.0 <2.0.0"
   },
+  "configSchema": {
+    "scalacExecutablePath": {
+      "default": "scalac",
+      "description": "The path of the compiler executable, with binary name. By default will use `scalac` from your path.",
+      "type": "string"
+    },
+    "scalacOptions": {
+      "default": "-Xlint",
+      "description": "Extra options passed to `scalac`",
+      "type": "string"
+    },
+    "compileClassesToClasspath": {
+      "default": false,
+      "description": "Compile classes to classpath.",
+      "type": "boolean"
+    },
+    "compileAllClassesOnLint": {
+      "default": false,
+      "description": "Compile all classes on lint.",
+      "type": "boolean"
+    },
+    "lintsOnChange": {
+      "default": false,
+      "description": "Determines if lints on every change or lint on save only.",
+      "type": "boolean"
+    }
+  },
   "scripts": {
     "lint": "eslint .",
-    "test": "apm test"
+    "test": "atom --test spec"
   },
   "dependencies": {
     "atom-linter": "10.0.0",
@@ -26,12 +53,12 @@
     "rimraf": "2.6.3"
   },
   "package-deps": [
-    "linter"
+    "linter:2.0.0"
   ],
   "providedServices": {
     "linter": {
       "versions": {
-        "1.0.0": "provideLinter"
+        "2.0.0": "provideLinter"
       }
     }
   },
@@ -52,7 +79,8 @@
       "atom": true
     },
     "env": {
-      "node": true
+      "node": true,
+      "browser": true
     }
   },
   "renovate": {
