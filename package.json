@@ -2,6 +2,7 @@
   "name": "linter-scalac",
   "main": "./lib/linter-scalac",
   "version": "2.0.1",
+  "private": true,
   "description": "Lint Scala on the fly, using scalac. Also possible to use other Scala linters, such as WartRemover, via compiler options.",
   "repository": "https://github.com/AtomLinter/linter-scalac",
   "license": "MIT",
@@ -86,6 +87,16 @@
   "renovate": {
     "extends": [
       "config:base"
+    ],
+    "semanticCommits": true,
+    "rangeStrategy": "pin",
+    "packageRules": [
+      {
+        "packagePatterns": [
+          "^eslint"
+        ],
+        "groupName": "ESLint packages"
+      }
     ]
   }
 }
