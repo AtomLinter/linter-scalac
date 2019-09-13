@@ -21,9 +21,9 @@ const fixturesPath = path.join(__dirname, 'fixtures');
 // and verified on Windows 7.
 
 // Utility functions
-const openFile = async targetFile => atom.workspace.open(targetFile);
+const openFile = async (targetFile) => atom.workspace.open(targetFile);
 
-const resetPath = async targetPath => new Promise((resolve, reject) => {
+const resetPath = async (targetPath) => new Promise((resolve, reject) => {
   rm(targetPath, (err) => {
     if (err) {
       reject(err);
@@ -32,7 +32,7 @@ const resetPath = async targetPath => new Promise((resolve, reject) => {
   });
 });
 
-const mkdirs = async targetDir => new Promise((resolve, reject) => {
+const mkdirs = async (targetDir) => new Promise((resolve, reject) => {
   mkdirp(targetDir, (err) => {
     if (err) {
       reject(err);
@@ -41,7 +41,7 @@ const mkdirs = async targetDir => new Promise((resolve, reject) => {
   });
 });
 
-const fileStats = async filePath => new Promise((resolve, reject) => {
+const fileStats = async (filePath) => new Promise((resolve, reject) => {
   fs.stat(filePath, (err, stats) => {
     if (err) {
       reject(err);
@@ -50,7 +50,7 @@ const fileStats = async filePath => new Promise((resolve, reject) => {
   });
 });
 
-const isFile = async filePath => (await fileStats(filePath)).isFile();
+const isFile = async (filePath) => (await fileStats(filePath)).isFile();
 
 const getScalaVersion = async () => {
   if (!getScalaVersion.version) {
